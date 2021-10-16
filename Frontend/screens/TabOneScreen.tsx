@@ -7,8 +7,19 @@ import { RootTabScreenProps } from '../types';
 
 import styled from 'styled-components'
 
+import Modal from '../Modal/ModalLoad.tsx';
+
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+  const [modalStatus, onChangeModalStatus] = React.useState("");
   const [plate, onChangePlate] = React.useState("");
+
+  const showModal = () => {
+    onChangeModalStatus(true);
+  };
+
+  const hideModal = () => {
+    onChangeModalStatus(false);
+  };
 
   const formatPlateName = (textValue) => {
     let newValue = textValue
@@ -45,6 +56,9 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
 
   return (
     <View style={styles.container}>
+    <Modal show={modalStatus} handleClose={hideModal}>
+      <p>Modal</p>
+    </Modal>
       <View style={styles.menu}>
         <ButtonSelected
           onClick={() => navigation.navigate('TabOne')}
@@ -58,7 +72,7 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
         </ButtonUnselected>
       </View>
       <View style={styles.content}>
-        <Text style={styles.text}>Número da placa:</Text>
+        <Text style={styles.plateNumber}>Número da placa:</Text>
         <TextInput
           style={styles.input}
           onChangeText={formatPlateName}
@@ -67,7 +81,7 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
           maxLength="8"
         />
         <ButtonConfirm
-          onClick={() => navigation.navigate('TabTwo')}
+          onClick={showModal}
           plate={plate}
         >
           CONFIRMAR ENTRADA
@@ -89,7 +103,6 @@ const ButtonSelected = styled.button`
     line-height: 22px;
     text-align: center;
     height: 48px;
-
 `
 const ButtonUnselected = styled.button`
     background-color: #FFFFFF;
@@ -145,15 +158,15 @@ const styles = StyleSheet.create({
   },
   menu: {
     top: '41px',
-    width: '100%',
+    width: '95%',
     textAlign: 'center',
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
   },
-  text: {
+  plateNumber: {
     position: 'absolute',
     left: '10%',
-    bottom: '150px',
+    top: '-10px',
     color: '#9B9B9B',
   },
 });

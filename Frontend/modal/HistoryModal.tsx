@@ -51,10 +51,10 @@ export default function Modal ({ handleClose, show, plate }) {
       <PlateDetailModal show={modalStatus} handleClose={hideModal} obj={selectedPlate}/>
       <View style={styles.content}>
       <div id="scrollableDiv" style={{ width: '80%' }}>
-        <ViewError>
+        <ViewTitle>
           <Icon5 color='#00BCD4' name='long-arrow-alt-left' size='32px' onClick={handleClose}/>
           <Text style={styles.title}>Placa {plate}</Text>
-        </ViewError>
+        </ViewTitle>
         <InfiniteScroll
           style={styles.infinityScroll}
           dataLength={dataArray.length}
@@ -91,7 +91,7 @@ const ButtonPayment = styled.button`
     border-radius: 4px;
     margin-bottom: 16px;
 `
-const ViewError = styled.div`
+const ViewTitle = styled.div`
     display: grid;
     border-radius: 4px;
     width: 80%;

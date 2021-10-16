@@ -7,10 +7,47 @@ import { RootTabScreenProps } from '../types';
 
 import styled from 'styled-components'
 
+import PayModal from '../modal/PayModal.tsx';
+import OutModal from '../modal/OutModal.tsx';
+import HistoryModal from '../modal/HistoryModal.tsx';
+import api from '../service/ParkingService.tsx';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+  const [payModalStatus, onChangePayModalStatus] = React.useState("");
+  const [outModalStatus, onChangeOutModalStatus] = React.useState("");
+  const [historyModalStatus, onChangeHistoryModalStatus] = React.useState("");
   const [plate, onChangePlate] = React.useState("");
+  const [error, onChangeError] = React.useState("");
+  const [errorStatus, onChangeErrorStatus] = React.useState(false);
+
+  const showPayModal = () => {
+    if (plate.length > 0) onChangePayModalStatus(true);
+  };
+
+  const hidePayModal = () => {
+    onChangePayModalStatus(false);
+  };
+
+  const showOutModal = () => {
+    if (plate.length > 0) onChangeOutModalStatus(true);
+  };
+
+  const hideOutModal = () => {
+    onChangeOutModalStatus(false);
+  };
+
+  const showHistoryModal = () => {
+    if (plate.length > 0) onChangeHistoryModalStatus(true);
+  };
+
+  const hideHistoryModal = () => {
+    onChangeHistoryModalStatus(false);
+  };
 
   const formatPlateName = (textValue) => {
+    onChangeErrorStatus(false)
+
     let newValue = textValue
     let regexPlate = /^[a-zA-Z]{3}$/;
     if (newValue.length > 2) {
@@ -45,6 +82,9 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
 
   return (
     <View style={styles.container}>
+      <PayModal show={payModalStatus} handleClose={hidePayModal} plate={plate}/>
+      <OutModal show={outModalStatus} handleClose={hideOutModal} plate={plate}/>
+      <HistoryModal show={historyModalStatus} handleClose={hideHistoryModal} plate={plate}/>
       <View style={styles.menu}>
         <ButtonUnselected
           onClick={() => navigation.navigate('TabOne')}
@@ -66,19 +106,23 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
           placeholder="AAA-0000"
           maxLength="8"
         />
+        <ViewError show={errorStatus}>
+          <Icon style={styles.errorIcon} color='#FF1744' name='exclamation-circle' size='20px' />
+          <Text style={styles.errorMessage}>{error}</Text>
+        </ViewError>
         <ButtonPayment
-          onClick={() => navigation.navigate('TabTwo')}
+          onClick={showPayModal}
           plate={plate}
         >
           PAGAMENTO
         </ButtonPayment>
         <ButtonLeave
-          onClick={() => navigation.navigate('TabTwo')}
+          onClick={showOutModal}
           plate={plate}
         >
           SAÍDA
         </ButtonLeave>
-        <Text style={styles.history}>VER HISTÓRICO</Text>
+        <Text style={styles.history} onClick={showHistoryModal}>VER HISTÓRICO</Text>
       </View>
     </View>
   );
@@ -141,6 +185,16 @@ const ButtonLeave = styled.button`
     border-radius: 4px;
     margin-bottom: 16px;
 `
+const ViewError = styled.div`
+    display: ${props => props.show ? "grid" : "none"};
+    background-color: rgba(255, 23, 68, 0.15);
+    border-radius: 4px;
+    width: 80%;
+    height: 32px;
+    margin-bottom: 12px;
+    align-items: center;
+    grid-template-columns: 0fr 1fr;
+`
 
 const styles = StyleSheet.create({
   input: {
@@ -188,5 +242,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'uppercase',
     color: '#4DD0E1',
+  },
+  errorIcon: {
+    margin: '5px',
+  },
+  errorMessage: {
+    fontFamily: 'Open Sans',
+    fontStyle: 'normal',
+    fontWeight: '600',
+    fontSize: '15px',
+    lineHeight: '20px',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    color: '#FF1744',
   }
 });

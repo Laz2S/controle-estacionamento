@@ -7,21 +7,56 @@ import { RootTabScreenProps } from '../types';
 
 import styled from 'styled-components'
 
-import Modal from '../Modal/ModalLoad.tsx';
+import LoadModal from '../modal/LoadModal.tsx';
+import api from '../service/ParkingService.tsx';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
-  const [modalStatus, onChangeModalStatus] = React.useState("");
+  const [loadModalStatus, onChangeLoadModalStatus] = React.useState("");
+  const [icon, onChangeIcon] = React.useState("");
+  const [text, onChangeText] = React.useState("");
   const [plate, onChangePlate] = React.useState("");
+  const [error, onChangeError] = React.useState("");
+  const [errorStatus, onChangeErrorStatus] = React.useState(false);
 
-  const showModal = () => {
-    onChangeModalStatus(true);
+  const entryPost = async () => {
+    showLoadModal()
+    onChangeIcon('spinner')
+    onChangeText('Registrando...')
+    const body = {
+      plate: plate
+    }
+    let result = await api.EntryOne(body)
+    if (result.status >= 200 || result.status < 300) {
+      console.log('if')
+      if (result.data.errors) {
+        onChangeErrorStatus(true)
+        onChangeError(result.data.errors.plate)
+      }
+      else if (result.status === 404) {
+        onChangeErrorStatus(true)
+        onChangeError(result.statusText)
+      }
+    }
+    else {
+      console.log('else')
+      onChangeIcon('check-circle')
+      onChangeText('REGISTRADO!')
+    }
+    setTimeout(hideLoadModal, 1000)
+ }
+
+  const showLoadModal = () => {
+    onChangeLoadModalStatus(true);
   };
 
-  const hideModal = () => {
-    onChangeModalStatus(false);
+  const hideLoadModal = () => {
+    onChangeLoadModalStatus(false);
   };
 
   const formatPlateName = (textValue) => {
+    onChangeErrorStatus(false)
+
     let newValue = textValue
     let regexPlate = /^[a-zA-Z]{3}$/;
     if (newValue.length > 2) {
@@ -56,9 +91,8 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
 
   return (
     <View style={styles.container}>
-    <Modal show={modalStatus} handleClose={hideModal}>
-      <p>Modal</p>
-    </Modal>
+      <LoadModal show={loadModalStatus} icon={icon} text={text} handleClose={hideLoadModal}>
+      </LoadModal>
       <View style={styles.menu}>
         <ButtonSelected
           onClick={() => navigation.navigate('TabOne')}
@@ -80,8 +114,12 @@ export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'
           placeholder="AAA-0000"
           maxLength="8"
         />
+        <ViewError show={errorStatus}>
+          <Icon style={styles.errorIcon} color='#FF1744' name='exclamation-circle' size='20px' />
+          <Text style={styles.errorMessage}>{error}</Text>
+        </ViewError>
         <ButtonConfirm
-          onClick={showModal}
+          onClick={entryPost}
           plate={plate}
         >
           CONFIRMAR ENTRADA
@@ -131,6 +169,16 @@ const ButtonConfirm = styled.button`
     width: 80%;
     border-radius: 4px;
 `
+const ViewError = styled.div`
+    display: ${props => props.show ? "grid" : "none"};
+    background-color: rgba(255, 23, 68, 0.15);
+    border-radius: 4px;
+    width: 80%;
+    height: 32px;
+    margin-bottom: 12px;
+    align-items: center;
+    grid-template-columns: 0fr 1fr;
+`
 
 const styles = StyleSheet.create({
   input: {
@@ -169,4 +217,17 @@ const styles = StyleSheet.create({
     top: '-10px',
     color: '#9B9B9B',
   },
+  errorIcon: {
+    margin: '5px',
+  },
+  errorMessage: {
+    fontFamily: 'Open Sans',
+    fontStyle: 'normal',
+    fontWeight: '600',
+    fontSize: '15px',
+    lineHeight: '20px',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    color: '#FF1744',
+  }
 });

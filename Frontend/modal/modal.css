@@ -12,8 +12,8 @@
   height: 100%;
   top: 153px;
   width: 100%;
-  alignItems: center;
-  textAlign: left;
+  align-items: center;
+  text-align: center;
 
 background: #FFFFFF;
   mix-blend-mode: normal;

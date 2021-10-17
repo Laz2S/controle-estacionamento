@@ -5,5 +5,6 @@ Aplicação criada utilizando Expo CLI.
 
 Para iniciar a aplicação, entre na pasta Frontend, digite:
 
--yarn install;
--expo start;
+yarn install;
+
+expo start;

@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "cd Frontend; expo start --web"
+  }
+}

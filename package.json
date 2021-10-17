@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "start": "cd Frontend; expo start --web"
+    "start": "cd Frontend; yarn install; expo start --web"
   }
 }

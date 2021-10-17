@@ -1,6 +1,0 @@
-{
-  "scripts": {
-    "heroku-prebuild": "cd Frontend; yarn install; expo start --web",
-    "start": "cd api && npm start"
-  }
-}
